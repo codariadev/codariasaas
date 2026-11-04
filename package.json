@@ -1,0 +1,43 @@
+{
+ "name": "codaria-saas",
+ "private": true,
+ "scripts": {
+  "dev": "next dev",
+  "build": "next build",
+  "start": "next start",
+  "lint": "next lint",
+  "emulators": "npx firebase-tools@13.22.1 emulators:start --only auth,firestore,storage --project demo-clientea",
+  "local": "npx firebase-tools@13.22.1 emulators:exec --ui --only auth,firestore,storage --project demo-clientea \"node scripts/seed-emulator.mjs && next dev\"",
+  "seed": "node scripts/seed-emulator.mjs",
+  "test:rules": "npx firebase-tools@13.22.1 emulators:exec --only firestore --project demo-rules \"vitest run\"",
+  "validate": "node scripts/validate-project.mjs",
+  "deploy:rules": "node scripts/deploy-rules.mjs",
+  "onboard": "node scripts/onboard-tenant.mjs",
+  "admin:create": "node scripts/create-admin.mjs"
+ },
+ "dependencies": {
+  "firebase": "10.14.1",
+  "firebase-admin": "12.6.0",
+  "next": "14.2.15",
+  "react": "18.3.1",
+  "react-dom": "18.3.1"
+ },
+ "devDependencies": {
+  "@firebase/rules-unit-testing": "3.0.4",
+  "@types/node": "20.16.11",
+  "@types/react": "18.3.11",
+  "@types/react-dom": "18.3.1",
+  "@typescript-eslint/eslint-plugin": "^7.18.0",
+  "@typescript-eslint/parser": "^7.18.0",
+  "autoprefixer": "10.4.20",
+  "eslint": "^8.57.1",
+  "eslint-config-next": "^14.2.15",
+  "postcss": "8.4.47",
+  "tailwindcss": "3.4.14",
+  "typescript": "5.6.3",
+  "vitest": "2.1.4"
+ },
+ "engines": {
+  "node": ">=18.18"
+ }
+}

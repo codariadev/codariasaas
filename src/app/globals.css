@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+:root {
+  --bg: #fff;
+  --card: #ecdece;
+  --tx: #1a1730;
+  --mu: #1a1730;
+  --bd: #1a1730;
+  --side: #1b1730;
+  --ac: #7c4dff;
+  --soft: color-mix(in srgb, var(--ac) 12%, transparent);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #110f1f;
+    --card: #1a1730;
+    --tx: #efedfa;
+    --mu: #9a96b8;
+    --bd: #2b2748;
+    --side: #0c0a18;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #110f1f;
+  --card: #1a1730;
+  --tx: #efedfa;
+  --mu: #9a96b8;
+  --bd: #2b2748;
+  --side: #0c0a18;
+  color-scheme: dark;
+}
+body {
+  background: var(--bg);
+  color: var(--tx);
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+.inp {
+  @apply w-full rounded-xl border border-bd bg-bg px-3 py-2;
+}
+.btn {
+  @apply rounded-xl bg-ac px-4 py-2 font-semibold text-white;
+}

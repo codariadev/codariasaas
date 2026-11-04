@@ -1,0 +1,47 @@
+rules_version = '2';
+// Projeto Firebase do CLIENTE. O login acontece no Firebase master; o servidor emite um token de sessão com o papel nos claims
+// (request.auth.token.role / .pid). Não há coleção de usuários aqui. Papel/pid só podem ser definidos por quem detém a chave do projeto.
+service cloud.firestore {
+  match /databases/{db}/documents {
+    function signedIn() { return request.auth != null && request.auth.token.role != null; }
+    function role() { return request.auth.token.role; }
+    function isAdmin() { return signedIn() && role() in ['owner', 'admin']; }
+    function isStaff() { return signedIn() && role() in ['owner', 'admin', 'manager']; }
+    function front() { return signedIn() && role() in ['owner', 'admin', 'manager', 'receptionist']; }
+    match /customers/{id} { allow read: if signedIn(); allow write: if front(); }
+    match /appointments/{id} {
+      allow read: if front() || (signedIn() && role() == 'professional' && resource.data.professionalId == request.auth.token.pid);
+      allow write: if front();
+    }
+    match /services/{id} { allow read: if signedIn(); allow write: if isStaff(); }
+    match /professionals/{id} { allow read: if signedIn(); allow write: if isStaff(); }
+    match /transactions/{id} {
+  allow read, update, delete: if isStaff();
+
+  allow create: if isStaff() || (
+    front()
+    && request.resource.data.type == "in"
+    && request.resource.data.category == "Atendimento"
+    && request.resource.data.appointmentId is string
+    && id == "appointment_" + request.resource.data.appointmentId
+    && request.resource.data.amount is number
+    && request.resource.data.amount > 0
+    && exists(
+      /databases/$(db)/documents/appointments/$(request.resource.data.appointmentId)
+    )
+    && get(
+      /databases/$(db)/documents/appointments/$(request.resource.data.appointmentId)
+    ).data.status == "concluido"
+    && get(
+      /databases/$(db)/documents/appointments/$(request.resource.data.appointmentId)
+    ).data.priceSnapshot == request.resource.data.amount
+  );
+}
+    match /commissions/{id} { allow read, write: if isStaff(); }
+    match /products/{id} { allow read: if signedIn(); allow write: if isStaff(); }
+    match /stock_movements/{id} { allow read: if signedIn(); allow create: if isStaff(); allow update, delete: if false; }
+    match /campaigns/{id} { allow read: if signedIn(); allow write: if isStaff(); }
+    match /settings/{doc} { allow read: if signedIn(); allow write: if isAdmin(); }
+    match /audit_logs/{id} { allow read: if isAdmin(); allow create: if signedIn(); allow update, delete: if false; }
+  }
+}
